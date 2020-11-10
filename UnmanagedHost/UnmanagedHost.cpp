@@ -5,12 +5,30 @@
 
 #include "Objbase.h"
 
+#include <metahost.h>
+#include <mscoree.h>
+#pragma comment(lib, "mscoree.lib")
+
 #import "mscorlib.tlb" auto_rename
 #import ".\ManagedCOMService.tlb" //raw_interfaces_only
+
+void StartCLR() {
+    ICLRRuntimeHost* pRuntimeHost = nullptr;
+    ICLRMetaHost* pMetaHost = nullptr;
+    ICLRRuntimeInfo* pRuntimeInfo = nullptr;
+    HRESULT hr = CLRCreateInstance(CLSID_CLRMetaHost, IID_ICLRMetaHost, (LPVOID*)&pMetaHost);
+    hr = pMetaHost->GetRuntime(L"v4.0.30319", IID_ICLRRuntimeInfo, (LPVOID*)&pRuntimeInfo);
+    hr = pRuntimeInfo->SetDefaultStartupFlags(STARTUP_SERVER_GC, NULL);
+    pRuntimeInfo->GetInterface(CLSID_CLRRuntimeHost, IID_ICLRRuntimeHost, (LPVOID*)&pRuntimeHost);
+    pRuntimeHost->Start();
+
+    //TODO<srn>:: need to release these objects
+}
 
 int main()
 {
     std::cout << "Hello World!\n";
+    StartCLR();
     HRESULT hr = CoInitialize(NULL);
     ManagedCOMService::ICalculatorPtr ptr;
     hr = CoCreateInstance(

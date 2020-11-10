@@ -11,6 +11,7 @@ namespace ManagedCOMService
         public int Add(int num1, int num2)
         {
             Console.WriteLine($"IsServerGC:{System.Runtime.GCSettings.IsServerGC}");
+            Console.WriteLine($"GCLatencyMode:{System.Runtime.GCSettings.LatencyMode}");
             Console.WriteLine($"Reading settings from: {ConfigurationManager.AppSettings["SettingsFileName"]}");
             return num1 + num2;
         }
